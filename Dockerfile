@@ -1,10 +1,14 @@
-FROM golang:1.14.6-alpine3.12 as base
+FROM golang:1.14.6-alpine3.12 AS builder
 
 WORKDIR /go/src/hello
 
-COPY . .
+COPY /go/src/hello .
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+RUN go get -v ./...  \
+    && go build -o hello
 
-CMD ["hello"]
+FROM scratch 
+
+COPY --from=builder go/src/hello/ .
+
+CMD ["./hello"] 
